@@ -26,13 +26,13 @@ public class ItemRepositoryImpl implements ItemRepository {
         List<Item> userItems = items.get(userId);
         if (userItems != null && userItems.contains(itemsById.get(itemId))) {
             return itemsById.computeIfPresent(itemId, (key, item) -> {
-                if (newItem.getName()!=null) {
+                if (newItem.getName() != null) {
                     item.setName(newItem.getName());
                 }
-                if (newItem.getDescription()!=null) {
+                if (newItem.getDescription() != null) {
                     item.setDescription(newItem.getDescription());
                 }
-                if (newItem.getAvailable()!=null) {
+                if (newItem.getAvailable() != null) {
                     item.setAvailable(newItem.getAvailable());
                 }
                 return item;

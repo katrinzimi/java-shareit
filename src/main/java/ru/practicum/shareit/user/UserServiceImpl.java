@@ -21,8 +21,8 @@ class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateUser(User user,long userId) {
-        return repository.updateUser(user,userId);
+    public User updateUser(User user, long userId) {
+        return repository.updateUser(user, userId);
     }
 
     @Override

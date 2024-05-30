@@ -10,8 +10,10 @@ public interface ItemService {
     List<Item> getItems(long userId);
 
     void deleteItem(long userId, long itemId);
+
     Item getItem(long itemId);
-    Item updateItem(long userIs,long itemId,Item item);
+
+    Item updateItem(long userIs, long itemId, Item item);
 
     List<Item> searchItem(Long userId, String text);
 

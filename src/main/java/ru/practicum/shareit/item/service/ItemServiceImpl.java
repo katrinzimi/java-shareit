@@ -8,7 +8,6 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -26,10 +25,10 @@ class ItemServiceImpl implements ItemService {
     @Override
     public Item addNewItem(long userId, Item item) {
         User user = userRepository.findById(userId);
-        if(user==null){
+        if (user == null) {
             throw new NotFoundException("Пользователя не существует");
         }
-        return repository.save(userId,item);
+        return repository.save(userId, item);
     }
 
     @Override
@@ -38,17 +37,17 @@ class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Item updateItem(long userId, long itemId,Item item) {
+    public Item updateItem(long userId, long itemId, Item item) {
         List<Item> userItems = repository.findByUserId(userId);
-        if(userItems.stream().filter(item1 -> item1.getId().equals(itemId)).findAny().isEmpty()){
+        if (userItems.stream().filter(item1 -> item1.getId().equals(itemId)).findAny().isEmpty()) {
             throw new NotFoundException("Данному пользователю действие недоступно");
         }
-        return repository.updateItem(userId,itemId,item);
+        return repository.updateItem(userId, itemId, item);
     }
 
     @Override
     public List<Item> searchItem(Long userId, String text) {
-        if(text.isEmpty()){
+        if (text.isEmpty()) {
             return Collections.emptyList();
         }
         return repository.searchItem(userId, text);

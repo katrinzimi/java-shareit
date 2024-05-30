@@ -28,6 +28,7 @@ public class ErrorHandler {
                 "Объект не найден", e.getMessage()
         );
     }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleConflict(final ConflictException e) {

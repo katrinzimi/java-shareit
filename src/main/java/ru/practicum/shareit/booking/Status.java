@@ -4,4 +4,4 @@ public enum Status {
     WAITING,
     REJECTED,
     CANCELED
-    }
+}

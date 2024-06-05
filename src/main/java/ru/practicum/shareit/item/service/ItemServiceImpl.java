@@ -3,6 +3,8 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.User;
@@ -10,6 +12,7 @@ import ru.practicum.shareit.user.UserRepository;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -18,43 +21,61 @@ class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
 
     @Override
-    public List<Item> getItems(long userId) {
-        return repository.findByUserId(userId);
+    public List<ItemDto> getItems(long userId) {
+        return repository.findByUserId(userId).stream()
+                .map(ItemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Item addNewItem(long userId, Item item) {
+    public ItemDto addNewItem(long userId, ItemDto itemDto) {
         User user = userRepository.findById(userId);
         if (user == null) {
             throw new NotFoundException("Пользователя не существует");
         }
-        return repository.save(userId, item);
+        return ItemMapper.toItemDto(repository.save(ItemMapper.toItem(itemDto, user)));
     }
 
     @Override
     public void deleteItem(long userId, long itemId) {
-        repository.deleteByUserIdAndItemId(userId, itemId);
-    }
-
-    @Override
-    public Item updateItem(long userId, long itemId, Item item) {
-        List<Item> userItems = repository.findByUserId(userId);
-        if (userItems.stream().filter(item1 -> item1.getId().equals(itemId)).findAny().isEmpty()) {
+        Item item = repository.findItem(itemId);
+        if (!item.getOwner().getId().equals(userId)) {
             throw new NotFoundException("Данному пользователю действие недоступно");
         }
-        return repository.updateItem(userId, itemId, item);
+        repository.delete(itemId);
     }
 
     @Override
-    public List<Item> searchItem(Long userId, String text) {
+    public ItemDto updateItem(long userId, ItemDto itemDto) {
+        Item item = repository.findItem(itemDto.getId());
+        if (!item.getOwner().getId().equals(userId)) {
+            throw new NotFoundException("Данному пользователю действие недоступно");
+        }
+        if (itemDto.getName() != null) {
+            item.setName(itemDto.getName());
+        }
+        if (itemDto.getDescription() != null) {
+            item.setDescription(itemDto.getDescription());
+        }
+        if (itemDto.getAvailable() != null) {
+            item.setAvailable(itemDto.getAvailable());
+        }
+
+        return ItemMapper.toItemDto(repository.updateItem(item));
+    }
+
+    @Override
+    public List<ItemDto> searchItem(String text) {
         if (text.isEmpty()) {
             return Collections.emptyList();
         }
-        return repository.searchItem(userId, text);
+        return repository.searchItem(text).stream()
+                .map(ItemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Item getItem(long itemId) {
-        return repository.findItem(itemId);
+    public ItemDto getItem(long itemId) {
+        return ItemMapper.toItemDto(repository.findItem(itemId));
     }
 }

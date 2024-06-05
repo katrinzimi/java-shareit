@@ -9,7 +9,7 @@ public interface UserRepository {
 
     User findById(long user);
 
-    User updateUser(User user, long userId);
+    User updateUser(User user);
 
     void deleteUser(long userId);
 }

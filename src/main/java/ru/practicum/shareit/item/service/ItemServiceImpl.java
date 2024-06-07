@@ -7,8 +7,8 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
-import ru.practicum.shareit.user.User;
-import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,24 +21,24 @@ class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
 
     @Override
-    public List<ItemDto> getItems(long userId) {
+    public List<ItemDto> findAll(long userId) {
         return repository.findByUserId(userId).stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public ItemDto addNewItem(long userId, ItemDto itemDto) {
+    public ItemDto create(long userId, ItemDto itemDto) {
         User user = userRepository.findById(userId);
         if (user == null) {
             throw new NotFoundException("Пользователя не существует");
         }
-        return ItemMapper.toItemDto(repository.save(ItemMapper.toItem(itemDto, user)));
+        return ItemMapper.toItemDto(repository.create(ItemMapper.toItem(itemDto, user)));
     }
 
     @Override
-    public void deleteItem(long userId, long itemId) {
-        Item item = repository.findItem(itemId);
+    public void delete(long userId, long itemId) {
+        Item item = repository.findById(itemId);
         if (!item.getOwner().getId().equals(userId)) {
             throw new NotFoundException("Данному пользователю действие недоступно");
         }
@@ -46,8 +46,11 @@ class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto updateItem(long userId, ItemDto itemDto) {
-        Item item = repository.findItem(itemDto.getId());
+    public ItemDto update(long userId, ItemDto itemDto) {
+        Item item = repository.findById(itemDto.getId());
+        if (item == null) {
+            throw new NotFoundException("Вещь не найдена");
+        }
         if (!item.getOwner().getId().equals(userId)) {
             throw new NotFoundException("Данному пользователю действие недоступно");
         }
@@ -61,21 +64,21 @@ class ItemServiceImpl implements ItemService {
             item.setAvailable(itemDto.getAvailable());
         }
 
-        return ItemMapper.toItemDto(repository.updateItem(item));
+        return ItemMapper.toItemDto(repository.update(item));
     }
 
     @Override
-    public List<ItemDto> searchItem(String text) {
+    public List<ItemDto> search(String text) {
         if (text.isEmpty()) {
             return Collections.emptyList();
         }
-        return repository.searchItem(text).stream()
+        return repository.search(text).stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public ItemDto getItem(long itemId) {
-        return ItemMapper.toItemDto(repository.findItem(itemId));
+    public ItemDto findById(long itemId) {
+        return ItemMapper.toItemDto(repository.findById(itemId));
     }
 }

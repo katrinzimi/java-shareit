@@ -8,13 +8,13 @@ public interface ItemRepository {
 
     List<Item> findByUserId(long userId);
 
-    Item save(Item item);
+    Item create(Item item);
 
     void delete(long itemId);
 
-    Item findItem(long itemId);
+    Item findById(long itemId);
 
-    Item updateItem(Item item);
+    Item update(Item item);
 
-    List<Item> searchItem(String text);
+    List<Item> search(String text);
 }

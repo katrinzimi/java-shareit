@@ -27,33 +27,33 @@ class UserServiceImpl implements UserService {
 
     @Override
     public UserDto create(UserCreateDto userDto) {
-        return UserMapper.toUserDto(repository.create(UserMapper.toUser(userDto)));
+        return UserMapper.toUserDto(repository.save(UserMapper.toUser(userDto)));
     }
 
     @Override
     public UserDto update(UserUpdateDto userDto, long userId) {
-        User user = repository.findById(userId);
-        if (user == null) {
-            throw new NotFoundException("Пользователя не существует");
-        }
-        User newUser = new User(userId, user.getEmail(), user.getName());
-        if (userDto.getName() != null) {
-            newUser.setName(userDto.getName());
-        }
-        if (userDto.getEmail() != null) {
-            newUser.setEmail(userDto.getEmail());
-        }
-        return UserMapper.toUserDto(repository.update(newUser));
+        return repository.findById(userId).map(user -> {
+            User newUser = new User(userId, user.getEmail(), user.getName());
+            if (userDto.getName() != null) {
+                newUser.setName(userDto.getName());
+            }
+            if (userDto.getEmail() != null) {
+                newUser.setEmail(userDto.getEmail());
+            }
+            return UserMapper.toUserDto(repository.save(newUser));
+        }).orElseThrow(() -> new NotFoundException("Пользователя не существует"));
     }
 
     @Override
     public UserDto findById(long userId) {
-        return UserMapper.toUserDto(repository.findById(userId));
+        return repository.findById(userId)
+                .map(UserMapper::toUserDto)
+                .orElse(null);
     }
 
     @Override
     public void deleteUser(long userId) {
-        repository.delete(userId);
+        repository.deleteById(userId);
     }
 
 }

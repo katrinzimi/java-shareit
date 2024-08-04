@@ -1,6 +1,7 @@
 package ru.practicum.shareit.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -31,7 +32,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleConflict(final ConflictException e) {
+    public ErrorResponse handleConflict(final DataIntegrityViolationException e) {
         log.info("Ошибка 409 при обработке запроса");
         return new ErrorResponse(
                 "Неверный запрос", e.getMessage()

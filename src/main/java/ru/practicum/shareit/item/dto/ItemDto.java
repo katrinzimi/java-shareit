@@ -4,9 +4,9 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 @Data
-
 public class ItemDto {
     private final Long id;
     @NotBlank
@@ -15,4 +15,6 @@ public class ItemDto {
     private final String description;
     @NotNull
     private final Boolean available;
+    private final LocalDateTime previousBookingEnd;
+    private final LocalDateTime nextBookingStart;
 }

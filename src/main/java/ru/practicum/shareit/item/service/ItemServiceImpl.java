@@ -2,14 +2,20 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -17,11 +23,33 @@ import java.util.stream.Collectors;
 class ItemServiceImpl implements ItemService {
     private final ItemRepository repository;
     private final UserRepository userRepository;
+    private final BookingRepository bookingRepository;
 
     @Override
     public List<ItemDto> findAll(long userId) {
-        return repository.findAllByOwnerId(userId).stream()
-                .map(ItemMapper::toItemDto)
+        List<Item> allItems = repository.findAllByOwnerId(userId);
+        List<Long> allItemIds = allItems.stream().map(Item::getId).collect(Collectors.toList());
+        List<Booking> allBookings = bookingRepository.findAllByItemIdIn(allItemIds);
+        Map<Long, List<Booking>> bookingsByItem = allBookings.stream()
+                .collect(Collectors.groupingBy(booking -> booking.getItem().getId()));
+
+        return allItems.stream()
+                .map(item -> {
+                    LocalDateTime previousBookingEnd = null;
+                    LocalDateTime nextBookingStart = null;
+                    List<Booking> itemBookings = bookingsByItem.getOrDefault(item.getId(), Collections.emptyList());
+                    itemBookings.sort(Comparator.comparing(Booking::getStart));
+                    LocalDateTime now = LocalDateTime.now();
+                    for (Booking booking : itemBookings) {
+                        if (booking.getEnd().isBefore(now)) {
+                            previousBookingEnd = booking.getEnd();
+                        }
+                        if (nextBookingStart == null && booking.getStart().isAfter(now)) {
+                            nextBookingStart = booking.getStart();
+                        }
+                    }
+                    return ItemMapper.toItemDto(item, previousBookingEnd, nextBookingStart);
+                })
                 .collect(Collectors.toList());
     }
 

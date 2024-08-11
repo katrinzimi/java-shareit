@@ -44,7 +44,7 @@ public class ItemController {
                           @PathVariable long itemId,
                           @RequestBody ItemDto itemDto) {
         return itemService.update(userId,
-                new ItemDto(itemId, itemDto.getName(), itemDto.getDescription(), itemDto.getAvailable()));
+                new ItemDto(itemId, itemDto.getName(), itemDto.getDescription(), itemDto.getAvailable(), null, null));
     }
 
     @GetMapping("/search")

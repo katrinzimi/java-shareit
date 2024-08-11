@@ -48,4 +48,13 @@ public class ErrorHandler {
         );
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handle(final BookingException e) {
+        log.info("Ошибка 400 при обработке запроса");
+        return new ErrorResponse(
+                "Ошибка бронирования", e.getMessage()
+        );
+    }
+
 }

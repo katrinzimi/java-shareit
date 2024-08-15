@@ -4,10 +4,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.exception.BookingException;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.item.dto.CommentMapper;
+import ru.practicum.shareit.item.dto.CommetDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -24,6 +29,7 @@ class ItemServiceImpl implements ItemService {
     private final ItemRepository repository;
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
+    private final CommentRepository commentRepository;
 
     @Override
     public List<ItemDto> findAll(long userId) {
@@ -48,7 +54,8 @@ class ItemServiceImpl implements ItemService {
                             nextBookingStart = booking.getStart();
                         }
                     }
-                    return ItemMapper.toItemDto(item, previousBookingEnd, nextBookingStart);
+                    List<Comment> comments = commentRepository.findAllCommentsByItemId(item.getId());
+                    return ItemMapper.toItemDto(item, previousBookingEnd, nextBookingStart, comments);
                 })
                 .collect(Collectors.toList());
     }
@@ -102,9 +109,30 @@ class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    public CommetDto createComment(Long userId, Long itemId, CommetDto commetDto) {
+        return userRepository.findById(userId)
+                .map(user -> repository.findById(itemId)
+                        .map(item -> {
+                            List<Booking> pastBookings = bookingRepository.findPastBookings(userId);
+                            if (pastBookings.isEmpty()) {
+                                throw new BookingException("Не возможно оставить отзыв не завершенному бронированию");
+                            }
+                            Comment comment = CommentMapper.toComment(commetDto, item, user);
+                            return CommentMapper.toCommentDto(commentRepository.save(comment));
+
+                        })
+                        .orElseThrow(() -> new NotFoundException("Вещи не существует")))
+                .orElseThrow(() -> new NotFoundException("Пользователя не существует"));
+
+    }
+
+    @Override
     public ItemDto findById(long itemId) {
         return repository.findById(itemId)
-                .map(ItemMapper::toItemDto)
+                .map(item -> {
+                    List<Comment> comments = commentRepository.findAllCommentsByItemId(item.getId());
+                    return ItemMapper.toItemDto(item, null, null, comments);
+                })
                 .orElse(null);
     }
 }

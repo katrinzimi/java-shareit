@@ -11,18 +11,18 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findAllByBookerIdAndStatus(Long userId, Status status);
 
     @Query("SELECT b FROM Booking b " +
-            "WHERE b.end > NOW() " +
-            "and NOW() > b.start " +
+            "WHERE b.end > current_timestamp " +
+            "and current_timestamp > b.start " +
             "and b.booker.id = ?1")
     List<Booking> findCurrentBookings(Long userId);
 
     @Query("SELECT b FROM Booking b " +
-            "WHERE b.end < NOW() " +
+            "WHERE b.end < current_timestamp " +
             "and b.booker.id = ?1")
     List<Booking> findPastBookings(Long userId);
 
     @Query("SELECT b FROM Booking b " +
-            "WHERE b.start > NOW() " +
+            "WHERE b.start > current_timestamp " +
             "and b.booker.id = ?1")
     List<Booking> findFutureBookings(Long userId);
 
@@ -31,18 +31,18 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findAllByItemIdInAndStatus(List<Long> itemIds, Status status);
 
     @Query("SELECT b FROM Booking b " +
-            "WHERE b.end > NOW() " +
-            "and NOW() > b.start " +
+            "WHERE b.end > current_timestamp " +
+            "and current_timestamp > b.start " +
             "and b.item.id in (?1)")
     List<Booking> findCurrentBookingsByItemId(List<Long> itemIds);
 
     @Query("SELECT b FROM Booking b " +
-            "WHERE b.end < NOW() " +
+            "WHERE b.end < current_timestamp " +
             "and b.item.id in (?1)")
     List<Booking> findPastBookingsByItemId(List<Long> itemIds);
 
     @Query("SELECT b FROM Booking b " +
-            "WHERE b.start > NOW() " +
+            "WHERE b.start > current_timestamp " +
             "and b.item.id in (?1)")
     List<Booking> findFutureBookingsByItemId(List<Long> itemIds);
 

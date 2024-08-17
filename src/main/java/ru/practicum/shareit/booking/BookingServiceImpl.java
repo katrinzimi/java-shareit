@@ -10,6 +10,7 @@ import ru.practicum.shareit.exception.ConflictException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.Comparator;
@@ -23,55 +24,65 @@ public class BookingServiceImpl implements BookingService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
+    //    @Override
+//    public BookingDto create(long bookerId, BookingDto bookingDto) {
+//        return userRepository.findById(bookerId)
+//                .map(user -> itemRepository.findById(bookingDto.getItemId())
+//                        .map(item -> {
+//                            if (item.getOwner().getId().equals(user.getId())) {
+//                                throw new BookingException("Владелец вещи не может создать запрос на бронирование своей вещи");
+//                            }
+//                            if (bookingDto.getStart().equals(bookingDto.getEnd())) {
+//                                throw new BookingException("Время начала бронирования не может совпадать с окончанием бронирования");
+//                            }
+//                            if (!item.getAvailable()) {
+//                                throw new ConflictException("Вещь недоступна");
+//                            }
+//                            Booking booking = BookingMapper.toBooking(bookingDto, item, user);
+//                            return BookingMapper.toBookingDto(bookingRepository.save(booking));
+//                        })
+//                        .orElseThrow(() -> new NotFoundException("Вещи не существует")))
+//                .orElseThrow(() -> new NotFoundException("Пользователя не существует"));
+//
+//    }
     @Override
     public BookingDto create(long bookerId, BookingDto bookingDto) {
-        return userRepository.findById(bookerId)
-                .map(user -> itemRepository.findById(bookingDto.getItemId())
-                        .map(item -> {
-                            if (item.getOwner().getId().equals(user.getId())) {
-                                throw new BookingException("Владелец вещи не может создать запрос на бронирование своей вещи");
-                            }
-                            if (bookingDto.getStart().equals(bookingDto.getEnd())) {
-                                throw new BookingException("Время начала бронирования не может совпадать с окончанием бронирования");
-                            }
-                            if (!item.getAvailable()) {
-                                throw new ConflictException("jhjh");
-                            }
-                            Booking booking = BookingMapper.toBooking(bookingDto, item, user);
-                            return BookingMapper.toBookingDto(bookingRepository.save(booking));
-                        })
-                        .orElseThrow(() -> new NotFoundException("Вещи не существует")))
-                .orElseThrow(() -> new NotFoundException("Пользователя не существует"));
+        User user = userRepository.findById(bookerId).orElseThrow(() -> new NotFoundException("Пользователя не существует"));
+        Item item = itemRepository.findById(bookingDto.getItemId()).orElseThrow(() -> new NotFoundException("Вещи не существует"));
+        if (item.getOwner().getId().equals(user.getId())) {
+            throw new BookingException("Владелец вещи не может создать запрос на бронирование своей вещи");
+        }
+        if (!item.getAvailable()) {
+            throw new ConflictException("Вещь недоступна");
+        }
+        Booking booking = BookingMapper.toBooking(bookingDto, item, user);
+        return BookingMapper.toBookingDto(bookingRepository.save(booking));
     }
 
     @Override
     public BookingDto approveBooking(Long userId, Long bookingId, Boolean approved) {
-        return bookingRepository.findById(bookingId).map(booking -> {
-            if (!booking.getItem().getOwner().getId().equals(userId)) {
-                throw new BookingException("Пользователь не является владельцем вещи");
-            }
-            if (approved) {
-                booking.setStatus(Status.APPROVED);
-            } else {
-                booking.setStatus(Status.REJECTED);
-            }
-            return BookingMapper.toBookingDto(bookingRepository.save(booking));
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException("Бронирования не существует"));
+        if (!booking.getItem().getOwner().getId().equals(userId)) {
+            throw new BookingException("Пользователь не является владельцем вещи");
+        }
+        if (approved) {
+            booking.setStatus(Status.APPROVED);
+        } else {
+            booking.setStatus(Status.REJECTED);
+        }
+        return BookingMapper.toBookingDto(bookingRepository.save(booking));
 
-        }).orElseThrow(() -> new NotFoundException("Бронирования не существует"));
     }
 
 
     @Override
     public BookingDto findById(Long userId, Long bookingId) {
-        return bookingRepository.findById(bookingId)
-                .map(booking -> {
-                    if (booking.getBooker().getId().equals(userId) || booking.getItem().getOwner().getId().equals(userId)) {
-                        return BookingMapper.toBookingDto(booking);
-                    } else {
-                        throw new BookingException("Пользователь не является владельцем вещи или автором бронирования");
-                    }
-                })
-                .orElseThrow(() -> new NotFoundException("Бронирования не существует"));
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException("Бронирования не существует"));
+        if (booking.getBooker().getId().equals(userId) || booking.getItem().getOwner().getId().equals(userId)) {
+            return BookingMapper.toBookingDto(booking);
+        } else {
+            throw new BookingException("Пользователь не является владельцем вещи или автором бронирования");
+        }
     }
 
     @Override

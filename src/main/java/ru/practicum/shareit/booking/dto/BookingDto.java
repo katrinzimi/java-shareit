@@ -5,6 +5,7 @@ import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import ru.practicum.shareit.annotation.BookingDate;
 import ru.practicum.shareit.booking.Status;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
+@BookingDate
 public class BookingDto {
     private final Long id;
     private final Long itemId;
@@ -25,6 +27,5 @@ public class BookingDto {
     private final UserDto booker;
     private final ItemDto item;
     private final Status status;
-
 
 }

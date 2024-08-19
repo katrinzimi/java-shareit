@@ -105,7 +105,7 @@ class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public CommentDto createComment(long userId, long itemId, CommentCreateDto commetDto) {
+    public CommentDto createComment(long userId, long itemId, CommentCreateDto commentDto) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователя не существует"));
         Item item = repository.findById(itemId).orElseThrow(() -> new NotFoundException("Вещи не существует"));
 
@@ -113,7 +113,7 @@ class ItemServiceImpl implements ItemService {
         if (pastBookings.isEmpty()) {
             throw new BookingException("Не возможно оставить отзыв не завершенному бронированию");
         }
-        Comment comment = CommentMapper.toComment(commetDto, item, user);
+        Comment comment = CommentMapper.toComment(commentDto, item, user);
         return CommentMapper.toCommentDto(commentRepository.save(comment));
     }
 

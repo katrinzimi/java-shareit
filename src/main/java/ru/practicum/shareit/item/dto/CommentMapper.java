@@ -6,9 +6,9 @@ import ru.practicum.shareit.user.model.User;
 
 
 public class CommentMapper {
-    public static CommetDto toCommentDto(Comment comment) {
+    public static CommentDto toCommentDto(Comment comment) {
         if (comment != null) {
-            return new CommetDto(
+            return new CommentDto(
                     comment.getId(),
                     comment.getText(),
                     comment.getItem(),
@@ -19,13 +19,13 @@ public class CommentMapper {
         return null;
     }
 
-    public static Comment toComment(CommetDto commetDto, Item item, User user) {
+    public static Comment toComment(CommentCreateDto commentDto, Item item, User user) {
         return new Comment(
-                commetDto.getId(),
-                commetDto.getText(),
+                commentDto.getId(),
+                commentDto.getText(),
                 item,
                 user,
-                commetDto.getCreated()
+                commentDto.getCreated()
         );
     }
 }

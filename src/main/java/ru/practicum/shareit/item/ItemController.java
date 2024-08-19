@@ -4,7 +4,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.dto.CommetDto;
+import ru.practicum.shareit.item.dto.CommentCreateDto;
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.ItemCreateDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
@@ -24,7 +26,7 @@ public class ItemController {
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
     public ItemDto create(@RequestHeader("X-Sharer-User-Id") Long userId,
-                          @RequestBody @Valid ItemDto itemDto) {
+                          @RequestBody @Valid ItemCreateDto itemDto) {
         return itemService.create(userId, itemDto);
     }
 
@@ -57,9 +59,9 @@ public class ItemController {
 
     @PostMapping("/{itemId}/comment")
     @ResponseStatus(HttpStatus.OK)
-    public CommetDto create(@RequestHeader("X-Sharer-User-Id") Long userId,
-                            @PathVariable long itemId,
-                            @RequestBody CommetDto commetDto) {
+    public CommentDto create(@RequestHeader("X-Sharer-User-Id") Long userId,
+                             @PathVariable long itemId,
+                             @RequestBody CommentCreateDto commetDto) {
         return itemService.createComment(userId, itemId, commetDto);
     }
 }

@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 @Data
@@ -30,8 +29,5 @@ public class Item {
     @ManyToOne(optional = false)
     @JoinColumn(name = "owner_id", nullable = false, updatable = false)
     private User owner;
-    @ManyToOne
-    @JoinColumn(name = "request_id")
-    private ItemRequest request;
 
 }

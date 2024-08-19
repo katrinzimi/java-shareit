@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.internal.util.stereotypes.Lazy;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
@@ -20,9 +21,11 @@ public class Comment {
     @Column
     private String text;
     @ManyToOne(optional = false)
+    @Lazy
     @JoinColumn(name = "item_id", nullable = false, updatable = false)
     private Item item;
     @ManyToOne(optional = false)
+    @Lazy
     @JoinColumn(name = "author_id", nullable = false, updatable = false)
     private User author;
     @Column(name = "created_date")

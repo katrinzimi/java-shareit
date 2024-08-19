@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.dto.BookingCreateDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.BookingState;
@@ -24,29 +25,8 @@ public class BookingServiceImpl implements BookingService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
-    //    @Override
-//    public BookingDto create(long bookerId, BookingDto bookingDto) {
-//        return userRepository.findById(bookerId)
-//                .map(user -> itemRepository.findById(bookingDto.getItemId())
-//                        .map(item -> {
-//                            if (item.getOwner().getId().equals(user.getId())) {
-//                                throw new BookingException("Владелец вещи не может создать запрос на бронирование своей вещи");
-//                            }
-//                            if (bookingDto.getStart().equals(bookingDto.getEnd())) {
-//                                throw new BookingException("Время начала бронирования не может совпадать с окончанием бронирования");
-//                            }
-//                            if (!item.getAvailable()) {
-//                                throw new ConflictException("Вещь недоступна");
-//                            }
-//                            Booking booking = BookingMapper.toBooking(bookingDto, item, user);
-//                            return BookingMapper.toBookingDto(bookingRepository.save(booking));
-//                        })
-//                        .orElseThrow(() -> new NotFoundException("Вещи не существует")))
-//                .orElseThrow(() -> new NotFoundException("Пользователя не существует"));
-//
-//    }
     @Override
-    public BookingDto create(long bookerId, BookingDto bookingDto) {
+    public BookingDto create(long bookerId, BookingCreateDto bookingDto) {
         User user = userRepository.findById(bookerId).orElseThrow(() -> new NotFoundException("Пользователя не существует"));
         Item item = itemRepository.findById(bookingDto.getItemId()).orElseThrow(() -> new NotFoundException("Вещи не существует"));
         if (item.getOwner().getId().equals(user.getId())) {
@@ -78,11 +58,10 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDto findById(Long userId, Long bookingId) {
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException("Бронирования не существует"));
-        if (booking.getBooker().getId().equals(userId) || booking.getItem().getOwner().getId().equals(userId)) {
-            return BookingMapper.toBookingDto(booking);
-        } else {
-            throw new BookingException("Пользователь не является владельцем вещи или автором бронирования");
+        if (!booking.getBooker().getId().equals(userId) || !booking.getItem().getOwner().getId().equals(userId)) {
+            throw new NotFoundException("Пользователь не является владельцем вещи или автором бронирования");
         }
+        return BookingMapper.toBookingDto(booking);
     }
 
     @Override

@@ -29,14 +29,13 @@ public class ItemMapper {
     }
 
 
-    public static Item toItem(ItemDto itemDto, User owner) {
+    public static Item toItem(ItemCreateDto itemDto, User owner) {
         return new Item(
                 itemDto.getId(),
                 itemDto.getName(),
                 itemDto.getDescription(),
                 itemDto.getAvailable(),
-                owner,
-                null
+                owner
         );
     }
 }

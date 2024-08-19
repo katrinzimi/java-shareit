@@ -12,7 +12,6 @@ public class BookingMapper {
         if (booking != null) {
             return new BookingDto(
                     booking.getId(),
-                    booking.getItem().getId(),
                     booking.getStart(),
                     booking.getEnd(),
                     UserMapper.toUserDto(booking.getBooker()),
@@ -23,7 +22,7 @@ public class BookingMapper {
         return null;
     }
 
-    public static Booking toBooking(BookingDto bookingDto, Item item, User user) {
+    public static Booking toBooking(BookingCreateDto bookingDto, Item item, User user) {
         return new Booking(
                 bookingDto.getId(),
                 bookingDto.getStart(),

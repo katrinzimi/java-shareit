@@ -25,6 +25,5 @@ public class Comment {
     @ManyToOne(optional = false)
     @JoinColumn(name = "author_id", nullable = false, updatable = false)
     private User author;
-    @Column(name = "created_date")
     private LocalDateTime created;
 }

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.Status;
 import ru.practicum.shareit.exception.BookingException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.*;
@@ -16,7 +17,6 @@ import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -33,16 +33,18 @@ class ItemServiceImpl implements ItemService {
     public List<ItemDto> findAll(long userId) {
         List<Item> allItems = repository.findAllByOwnerId(userId);
         List<Long> allItemIds = allItems.stream().map(Item::getId).collect(Collectors.toList());
-        List<Booking> allBookings = bookingRepository.findAllByItemIdIn(allItemIds);
+        List<Booking> allBookings = bookingRepository.findAllByItemIdInAndStatusOrderByStart(allItemIds, Status.APPROVED);
         Map<Long, List<Booking>> bookingsByItem = allBookings.stream()
                 .collect(Collectors.groupingBy(booking -> booking.getItem().getId()));
+        List<Comment> allComments = commentRepository.findAllCommentsByItemIdIn(allItemIds);
+        Map<Long, List<Comment>> commentByItem = allComments.stream()
+                .collect(Collectors.groupingBy(comment -> comment.getItem().getId()));
 
         return allItems.stream()
                 .map(item -> {
                     LocalDateTime previousBookingEnd = null;
                     LocalDateTime nextBookingStart = null;
                     List<Booking> itemBookings = bookingsByItem.getOrDefault(item.getId(), Collections.emptyList());
-                    itemBookings.sort(Comparator.comparing(Booking::getStart));
                     LocalDateTime now = LocalDateTime.now();
                     for (Booking booking : itemBookings) {
                         if (booking.getEnd().isBefore(now)) {
@@ -52,8 +54,9 @@ class ItemServiceImpl implements ItemService {
                             nextBookingStart = booking.getStart();
                         }
                     }
-                    List<Comment> comments = commentRepository.findAllCommentsByItemId(item.getId());
-                    return ItemMapper.toItemDto(item, previousBookingEnd, nextBookingStart, comments);
+
+                    return ItemMapper.toItemDto(item, previousBookingEnd, nextBookingStart,
+                            commentByItem.getOrDefault(item.getId(), Collections.emptyList()));
                 })
                 .collect(Collectors.toList());
     }

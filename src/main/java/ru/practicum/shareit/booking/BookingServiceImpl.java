@@ -118,9 +118,9 @@ public class BookingServiceImpl implements BookingService {
             case FUTURE:
                 return bookingRepository.findFutureBookingsByItemId(itemIds);
             case WAITING:
-                return bookingRepository.findAllByItemIdInAndStatus(itemIds, Status.WAITING);
+                return bookingRepository.findAllByItemIdInAndStatusOrderByStart(itemIds, Status.WAITING);
             case REJECTED:
-                return bookingRepository.findAllByItemIdInAndStatus(itemIds, Status.REJECTED);
+                return bookingRepository.findAllByItemIdInAndStatusOrderByStart(itemIds, Status.REJECTED);
             default:
                 throw new IllegalStateException("Неизвестный статус");
         }

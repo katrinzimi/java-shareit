@@ -6,7 +6,6 @@ import lombok.Data;
 
 @Data
 public class ItemCreateDto {
-    private final Long id;
     @NotBlank
     private final String name;
     @NotBlank

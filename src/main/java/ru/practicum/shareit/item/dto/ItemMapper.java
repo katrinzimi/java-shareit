@@ -31,7 +31,7 @@ public class ItemMapper {
 
     public static Item toItem(ItemCreateDto itemDto, User owner) {
         return new Item(
-                itemDto.getId(),
+                null,
                 itemDto.getName(),
                 itemDto.getDescription(),
                 itemDto.getAvailable(),

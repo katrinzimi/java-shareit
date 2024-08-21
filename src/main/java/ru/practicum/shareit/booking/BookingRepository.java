@@ -28,7 +28,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findAllByItemIdIn(List<Long> itemIds);
 
-    List<Booking> findAllByItemIdInAndStatus(List<Long> itemIds, Status status);
+    List<Booking> findAllByItemIdInAndStatusOrderByStart(List<Long> itemIds, Status status);
 
     @Query("SELECT b FROM Booking b " +
             "WHERE b.end > current_timestamp " +

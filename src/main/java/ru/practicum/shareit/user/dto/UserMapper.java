@@ -23,4 +23,13 @@ public class UserMapper {
 
         );
     }
+
+    public static User toUser(UserDto userDto) {
+        return new User(
+                userDto.getId(),
+                userDto.getEmail(),
+                userDto.getName()
+
+        );
+    }
 }

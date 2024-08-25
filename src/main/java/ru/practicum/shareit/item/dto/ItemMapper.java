@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.dto;
 
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
@@ -29,13 +30,14 @@ public class ItemMapper {
     }
 
 
-    public static Item toItem(ItemCreateDto itemDto, User owner) {
+    public static Item toItem(ItemCreateDto itemDto, User owner, ItemRequest itemRequest) {
         return new Item(
                 null,
                 itemDto.getName(),
                 itemDto.getDescription(),
                 itemDto.getAvailable(),
-                owner
+                owner,
+                itemRequest
         );
     }
 }

@@ -6,7 +6,10 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.model.User;
+
+import java.util.Objects;
 
 @Data
 @AllArgsConstructor
@@ -29,5 +32,20 @@ public class Item {
     @ManyToOne(optional = false)
     @JoinColumn(name = "owner_id", nullable = false, updatable = false)
     private User owner;
+    @ManyToOne()
+    @JoinColumn(name = "request_id", updatable = false)
+    private ItemRequest request;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Item item = (Item) o;
+        return Objects.equals(id, item.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

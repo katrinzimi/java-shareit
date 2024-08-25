@@ -12,6 +12,8 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -28,6 +30,7 @@ class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestRepository itemRequestRepository;
 
     @Override
     public List<ItemDto> findAll(long userId) {
@@ -63,8 +66,15 @@ class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto create(long userId, ItemCreateDto itemDto) {
+        ItemRequest itemRequest;
+        if (itemDto.getRequestId() != null) {
+            itemRequest = itemRequestRepository.findById(itemDto.getRequestId())
+                    .orElseThrow(() -> new NotFoundException("Данному пользователю действие недоступно"));
+        } else {
+            itemRequest = null;
+        }
         return userRepository.findById(userId)
-                .map(user -> ItemMapper.toItemDto(repository.save(ItemMapper.toItem(itemDto, user))))
+                .map(user -> ItemMapper.toItemDto(repository.save(ItemMapper.toItem(itemDto, user, itemRequest))))
                 .orElseThrow(() -> new NotFoundException("Пользователя не существует"));
     }
 

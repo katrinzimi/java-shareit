@@ -7,10 +7,11 @@ import lombok.Data;
 @Data
 public class ItemCreateDto {
     @NotBlank
-    private final String name;
+    private  final String name;
     @NotBlank
-    private final String description;
+    private  final String description;
     @NotNull
-    private final Boolean available;
+    private  final Boolean available;
+    private  final Long requestId;
 
 }

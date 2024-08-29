@@ -44,16 +44,18 @@ public class UserItTests {
         assertThat(createdUser.getName()).isEqualTo("Vasya");
         assertThat(createdUser.getId()).isNotNull();
     }
+
     @Test
     public void testUserUpdate() {
         UserCreateDto createDto = new UserCreateDto("email@mail.ru", "Vasya");
         UserDto createdUser = userService.create(createDto);
-        UserUpdateDto newDto = new UserUpdateDto(createdUser.getId(),"NEWemail@mail.ru", "Petya");
+        UserUpdateDto newDto = new UserUpdateDto(createdUser.getId(), "NEWemail@mail.ru", "Petya");
         UserDto update = userService.update(newDto, createdUser.getId());
         assertThat(update.getEmail()).isEqualTo("NEWemail@mail.ru");
         assertThat(update.getName()).isEqualTo("Petya");
         assertThat(update.getId()).isNotNull();
     }
+
     @Test
     public void testUserDelete() {
         UserCreateDto createDto = new UserCreateDto("email@mail.ru", "Vasya");
@@ -63,6 +65,7 @@ public class UserItTests {
         UserDto user = userService.findById(createdUser.getId());
         assertThat(user).isNull();
     }
+
     @Test
     public void testUserFindById() {
         UserCreateDto createDto = new UserCreateDto("email@mail.ru", "Vasya");
@@ -73,12 +76,13 @@ public class UserItTests {
         assertThat(createdUser.getName()).isEqualTo("Vasya");
         assertThat(createdUser.getId()).isNotNull();
     }
+
     @Test
     public void testUserFindAll() {
         UserCreateDto createDto = new UserCreateDto("email@mail.ru", "Vasya");
         UserDto createdUser = userService.create(createDto);
         List<UserDto> all = userService.findAll();
-        assertEquals("",1,all.size());
+        assertEquals("", 1, all.size());
         assertThat(all.get(0).getName()).isEqualTo(createdUser.getName());
         assertThat(all.get(0).getEmail()).isEqualTo(createdUser.getEmail());
     }

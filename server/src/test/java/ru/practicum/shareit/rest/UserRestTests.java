@@ -42,14 +42,15 @@ public class UserRestTests {
                 .andExpect(jsonPath("$.email").value("email@mail.ru"))
                 .andExpect(jsonPath("$.name").value("Petya"));
     }
+
     @Test
     public void testUserUpdate() throws Exception {
         UserDto userUpdateDto = new UserDto(1L, "newemail@mail.ru", "Vanya");
-        Mockito.when(userService.update(any(),eq(1L))).thenReturn(userUpdateDto);
+        Mockito.when(userService.update(any(), eq(1L))).thenReturn(userUpdateDto);
 
-        mvc.perform(patch("/users/{userId}",1L)
+        mvc.perform(patch("/users/{userId}", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(JsonUtil.toJson(new UserUpdateDto(1L,"newemail@mail.ru", "Vanya"))))
+                        .content(JsonUtil.toJson(new UserUpdateDto(1L, "newemail@mail.ru", "Vanya"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value("newemail@mail.ru"))
                 .andExpect(jsonPath("$.name").value("Vanya"));

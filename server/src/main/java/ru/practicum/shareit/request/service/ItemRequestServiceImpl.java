@@ -71,6 +71,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                     List<Item> items = itemRepository.findAllByRequestIdIn(List.of(requestId));
                     return ItemRequestMapper.toItemRequestDto(itemRequest, items);
                 })
-                .orElse(null);
+                .orElseThrow(() -> new NotFoundException("Запроса не существует"));
     }
 }

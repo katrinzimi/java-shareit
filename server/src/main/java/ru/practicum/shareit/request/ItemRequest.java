@@ -19,7 +19,7 @@ public class ItemRequest {
     private Long id;
     @Column
     private String description;
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "requestor_id", nullable = false, updatable = false)
     private User requestor;
     @Column(name = "created_date", nullable = false)

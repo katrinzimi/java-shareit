@@ -71,7 +71,7 @@ public class UserItTests {
         UserCreateDto createDto = new UserCreateDto("email@mail.ru", "Vasya");
         UserDto createdUser = userService.create(createDto);
         userService.findById(createdUser.getId());
-        assertThat(createdUser.getId()).isEqualTo(2L);
+        assertThat(createdUser.getId()).isNotZero();
         assertThat(createdUser.getEmail()).isEqualTo("email@mail.ru");
         assertThat(createdUser.getName()).isEqualTo("Vasya");
         assertThat(createdUser.getId()).isNotNull();

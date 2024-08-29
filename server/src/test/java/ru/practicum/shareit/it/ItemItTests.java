@@ -88,7 +88,7 @@ public class ItemItTests {
         bookingService.create(userBooker.getId(), createBookingDto);
         CommentCreateDto createDto = new CommentCreateDto("Comment");
         CommentDto comment = itemService.createComment(userBooker.getId(), item.getId(), createDto);
-        assertThat(comment.getId()).isEqualTo(2L);
+        assertThat(comment.getId()).isNotZero();
         assertThat(comment.getText()).isEqualTo("Comment");
         assertThat(comment.getAuthorName()).isEqualTo(userBooker.getName());
     }

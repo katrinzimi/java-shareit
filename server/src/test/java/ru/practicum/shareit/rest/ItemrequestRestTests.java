@@ -93,5 +93,4 @@ public class ItemrequestRestTests {
                 .andExpect(jsonPath("$.description").value(expected.getDescription()))
                 .andExpect(jsonPath("$.created").value(expected.getCreated()));
     }
-
 }

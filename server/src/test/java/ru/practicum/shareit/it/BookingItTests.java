@@ -114,6 +114,4 @@ public class BookingItTests {
         assertThat(bookingsByUser.get(0).getItem().getDescription()).isEqualTo(item.getDescription());
         assertThat(bookingsByUser.get(0).getStatus()).isEqualTo(Status.WAITING);
     }
-
-
 }

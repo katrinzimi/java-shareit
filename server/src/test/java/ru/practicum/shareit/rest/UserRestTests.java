@@ -91,5 +91,4 @@ public class UserRestTests {
         mvc.perform(delete("/users/{userId}", 1L))
                 .andExpect(status().isOk());
     }
-
 }

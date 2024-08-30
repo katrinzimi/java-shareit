@@ -144,5 +144,4 @@ public class BookingRestTests {
                 .andExpect(jsonPath("$[0].end").value(expected.getEnd()))
                 .andExpect(jsonPath("$[0].status").value("APPROVED"));
     }
-
 }

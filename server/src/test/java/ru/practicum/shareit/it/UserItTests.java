@@ -30,11 +30,6 @@ public class UserItTests {
     public void tearDown() {
         jdbcTemplate.execute("delete from users");
     }
-//    @BeforeEach
-//    void setUp() {
-//        user = User.builder().id(1).name("user").email("user@test.ru").build();
-//        user = userRepository.save(user);
-//    }
 
     @Test
     public void testUserCreate() {
@@ -86,6 +81,4 @@ public class UserItTests {
         assertThat(all.get(0).getName()).isEqualTo(createdUser.getName());
         assertThat(all.get(0).getEmail()).isEqualTo(createdUser.getEmail());
     }
-
-
 }

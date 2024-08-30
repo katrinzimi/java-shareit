@@ -116,6 +116,4 @@ public class ItemItTests {
         assertThat(search.get(0).getName()).isEqualTo(item.getName());
         assertThat(search.get(0).getDescription()).isEqualTo(item.getDescription());
     }
-
-
 }

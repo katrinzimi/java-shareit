@@ -88,5 +88,4 @@ public class ItemRequestItTests {
         ItemRequestDto request = requestService.getRequestById(itemRequestDto.getId());
         assertThat(request.getDescription()).isEqualTo("description_request");
     }
-
 }

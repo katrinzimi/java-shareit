@@ -142,5 +142,4 @@ public class ItemRestTests {
                 .andExpect(jsonPath("$.authorName").value(expected.getAuthorName()))
                 .andExpect(jsonPath("$.created").value(expected.getCreated()));
     }
-
 }

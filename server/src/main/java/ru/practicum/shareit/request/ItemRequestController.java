@@ -41,7 +41,7 @@ public class ItemRequestController {
         return result;
     }
 
-    @GetMapping("{requestId}")
+    @GetMapping("/{requestId}")
     public ItemRequestDto getRequestById(@PathVariable long requestId) {
         log.info("Создан запрос на получение списка запросов на вещи по Id: {} ", requestId);
         ItemRequestDto result = itemRequestService.getRequestById(requestId);

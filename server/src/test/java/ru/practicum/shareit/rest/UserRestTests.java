@@ -14,10 +14,11 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserUpdateDto;
 import ru.practicum.shareit.user.service.UserService;
 
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -54,6 +55,41 @@ public class UserRestTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value("newemail@mail.ru"))
                 .andExpect(jsonPath("$.name").value("Vanya"));
+    }
+
+    @Test
+    public void testUserFindById() throws Exception {
+        UserDto userUpdateDto = new UserDto(1L, "email@mail.ru", "Vanya");
+        Mockito.when(userService.findById(eq(1L))).thenReturn(userUpdateDto);
+
+        mvc.perform(get("/users/{userId}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(JsonUtil.toJson(new UserUpdateDto(1L, "email@mail.ru", "Vanya"))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value("email@mail.ru"))
+                .andExpect(jsonPath("$.name").value("Vanya"));
+    }
+
+    @Test
+    public void testUserFindAll() throws Exception {
+        UserDto userUpdateDto = new UserDto(1L, "email@mail.ru", "Vanya");
+        List<UserDto> userDtoList = List.of(userUpdateDto);
+        Mockito.when(userService.findAll()).thenReturn(userDtoList);
+
+        mvc.perform(get("/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(JsonUtil.toJson(new UserUpdateDto(1L, "email@mail.ru", "Vanya"))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(userDtoList.size()))
+                .andExpect(jsonPath("$[0].id").value(userUpdateDto.getId()))
+                .andExpect(jsonPath("$[0].name").value(userUpdateDto.getName()))
+                .andExpect(jsonPath("$[0].email").value(userUpdateDto.getEmail()));
+    }
+
+    @Test
+    public void testUserDelete() throws Exception {
+        mvc.perform(delete("/users/{userId}", 1L))
+                .andExpect(status().isOk());
     }
 
 }

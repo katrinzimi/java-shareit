@@ -48,8 +48,7 @@ public class BookingRestTests {
         mvc.perform(post("/bookings")
                         .header("X-Sharer-User-Id", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(JsonUtil.toJson(new BookingDto(1L, null
-                                , null, booker, item, Status.WAITING))))
+                        .content(JsonUtil.toJson(new BookingDto(1L, null, null, booker, item, Status.WAITING))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.start").value(expected.getStart()))
                 .andExpect(jsonPath("$.end").value(expected.getEnd()))
@@ -69,8 +68,7 @@ public class BookingRestTests {
                         .header("X-Sharer-User-Id", 1L)
                         .param("approved", "true")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(JsonUtil.toJson(new BookingDto(1L, null
-                                , null, booker, item, Status.APPROVED))))
+                        .content(JsonUtil.toJson(new BookingDto(1L, null, null, booker, item, Status.APPROVED))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.start").value(expected.getStart()))
                 .andExpect(jsonPath("$.end").value(expected.getEnd()))
@@ -89,8 +87,7 @@ public class BookingRestTests {
         mvc.perform(get("/bookings/{bookingId}", 1L)
                         .header("X-Sharer-User-Id", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(JsonUtil.toJson(new BookingDto(1L, null
-                                , null, booker, item, Status.APPROVED))))
+                        .content(JsonUtil.toJson(new BookingDto(1L, null, null, booker, item, Status.APPROVED))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.start").value(expected.getStart()))
                 .andExpect(jsonPath("$.end").value(expected.getEnd()))
@@ -102,8 +99,7 @@ public class BookingRestTests {
         owner = new UserDto(1L, "email@mail.ru", "Vanya");
         booker = new UserDto(2L, "email2@mail.ru", "Petya");
         item = new ItemDto(1L, "item", "description", true, null, null, List.of());
-        BookingDto expected = new BookingDto(1L, null
-                , null, booker, item, Status.APPROVED);
+        BookingDto expected = new BookingDto(1L, null, null, booker, item, Status.APPROVED);
         List<BookingDto> bookingDtoList = List.of(expected);
         Mockito.when(bookingService.findBookingsByUser(eq(2L), any())).thenReturn(bookingDtoList);
 
@@ -111,8 +107,7 @@ public class BookingRestTests {
                         .header("X-Sharer-User-Id", 2L)
                         .param("state", String.valueOf(BookingState.ALL))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(JsonUtil.toJson(new BookingDto(1L, null
-                                , null, booker, item, Status.APPROVED))))
+                        .content(JsonUtil.toJson(new BookingDto(1L, null, null, booker, item, Status.APPROVED))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(bookingDtoList.size()))
                 .andExpect(jsonPath("$[0].id").value(expected.getId()))
@@ -135,8 +130,7 @@ public class BookingRestTests {
                         .header("X-Sharer-User-Id", 1L)
                         .param("state", String.valueOf(BookingState.ALL))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(JsonUtil.toJson(new BookingDto(1L, null
-                                , null, booker, item, Status.APPROVED))))
+                        .content(JsonUtil.toJson(new BookingDto(1L, null, null, booker, item, Status.APPROVED))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(bookingDtoList.size()))
                 .andExpect(jsonPath("$[0].id").value(expected.getId()))

@@ -41,8 +41,7 @@ public class BookingRestTests {
         owner = new UserDto(1L, "email@mail.ru", "Vanya");
         booker = new UserDto(2L, "email2@mail.ru", "Petya");
         item = new ItemDto(1L, "item", "description", true, null, null, List.of());
-        BookingDto expected = new BookingDto(1L, null
-                , null, booker, item, Status.WAITING);
+        BookingDto expected = new BookingDto(1L, null, null, booker, item, Status.WAITING);
         Mockito.when(bookingService.create(eq(1L), any())).thenReturn(expected);
 
         mvc.perform(post("/bookings")
@@ -60,8 +59,7 @@ public class BookingRestTests {
         owner = new UserDto(1L, "email@mail.ru", "Vanya");
         booker = new UserDto(2L, "email2@mail.ru", "Petya");
         item = new ItemDto(1L, "item", "description", true, null, null, List.of());
-        BookingDto expected = new BookingDto(1L, null
-                , null, booker, item, Status.APPROVED);
+        BookingDto expected = new BookingDto(1L, null, null, booker, item, Status.APPROVED);
         Mockito.when(bookingService.approveBooking(eq(1L), eq(2L), any())).thenReturn(expected);
 
         mvc.perform(patch("/bookings/{bookingId}", 2L)
@@ -80,8 +78,7 @@ public class BookingRestTests {
         owner = new UserDto(1L, "email@mail.ru", "Vanya");
         booker = new UserDto(2L, "email2@mail.ru", "Petya");
         item = new ItemDto(1L, "item", "description", true, null, null, List.of());
-        BookingDto expected = new BookingDto(1L, null
-                , null, booker, item, Status.APPROVED);
+        BookingDto expected = new BookingDto(1L, null, null, booker, item, Status.APPROVED);
         Mockito.when(bookingService.findById(eq(1L), eq(1L))).thenReturn(expected);
 
         mvc.perform(get("/bookings/{bookingId}", 1L)
@@ -121,8 +118,7 @@ public class BookingRestTests {
         owner = new UserDto(1L, "email@mail.ru", "Vanya");
         booker = new UserDto(2L, "email2@mail.ru", "Petya");
         item = new ItemDto(1L, "item", "description", true, null, null, List.of());
-        BookingDto expected = new BookingDto(1L, null
-                , null, booker, item, Status.APPROVED);
+        BookingDto expected = new BookingDto(1L, null, null, booker, item, Status.APPROVED);
         List<BookingDto> bookingDtoList = List.of(expected);
         Mockito.when(bookingService.findBookingsByOwner(eq(1L), any())).thenReturn(bookingDtoList);
 

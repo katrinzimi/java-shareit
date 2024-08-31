@@ -14,7 +14,6 @@ import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
-import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -127,7 +126,7 @@ public class ItemRestTests {
 
     @Test
     public void testCommentCreate() throws Exception {
-        CommentDto commentDto = new CommentDto(1L, "comment", "Vanya", LocalDateTime.now(Clock.systemDefaultZone()));
+        CommentDto commentDto = new CommentDto(1L, "comment", "Vanya", LocalDateTime.parse("2024-08-29T00:00:00"));
         Mockito.when(itemService.createComment(eq(1L), eq(1L), any())).thenReturn(commentDto);
 
         mvc.perform(post("/items/{itemId}/comment", 1L)

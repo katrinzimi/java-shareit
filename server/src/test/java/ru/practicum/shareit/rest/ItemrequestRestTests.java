@@ -1,5 +1,6 @@
 package ru.practicum.shareit.rest;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,9 @@ import ru.practicum.shareit.request.ItemRequestController;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.service.ItemRequestService;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -29,68 +33,71 @@ public class ItemrequestRestTests {
 
     @MockBean
     private ItemRequestService requestService;
+    private ItemRequestDto expected;
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS");
+
+    @BeforeEach
+    void setup() {
+        expected = new ItemRequestDto(1L, "description", LocalDateTime.now(Clock.systemDefaultZone()), List.of());
+    }
 
     @Test
     public void testRequestCreate() throws Exception {
-        ItemRequestDto expected = new ItemRequestDto(1L, "description", null, List.of());
         Mockito.when(requestService.create(any(), eq(1L))).thenReturn(expected);
 
         mvc.perform(post("/requests")
                         .header("X-Sharer-User-Id", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(JsonUtil.toJson(new ItemRequestDto(1L, "description", null, List.of()))))
+                        .content(JsonUtil.toJson(expected)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(expected.getId()))
                 .andExpect(jsonPath("$.description").value(expected.getDescription()))
-                .andExpect(jsonPath("$.created").value(expected.getCreated()));
+                .andExpect(jsonPath("$.created").value(expected.getCreated().format(formatter)));
     }
 
 
     @Test
     public void testRequestFindById() throws Exception {
-        ItemRequestDto expected = new ItemRequestDto(1L, "description", null, List.of());
         List<ItemRequestDto> requestDtoList = List.of(expected);
         Mockito.when(requestService.findAllByUserId(eq(1L))).thenReturn(requestDtoList);
 
         mvc.perform(get("/requests")
                         .header("X-Sharer-User-Id", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(JsonUtil.toJson(new ItemRequestDto(1L, "description", null, List.of()))))
+                        .content(JsonUtil.toJson(expected)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(requestDtoList.size()))
                 .andExpect(jsonPath("$[0].id").value(expected.getId()))
                 .andExpect(jsonPath("$[0].description").value(expected.getDescription()))
-                .andExpect(jsonPath("$[0].created").value(expected.getCreated()));
+                .andExpect(jsonPath("$[0].created").value(expected.getCreated().format(formatter)));
     }
 
     @Test
     public void testRequestFindAll() throws Exception {
-        ItemRequestDto expected = new ItemRequestDto(1L, "description", null, List.of());
         List<ItemRequestDto> requestDtoList = List.of(expected);
         Mockito.when(requestService.findAll()).thenReturn(requestDtoList);
 
         mvc.perform(get("/requests/all")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(JsonUtil.toJson(new ItemRequestDto(1L, "description", null, List.of()))))
+                        .content(JsonUtil.toJson(expected)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(requestDtoList.size()))
                 .andExpect(jsonPath("$[0].id").value(expected.getId()))
                 .andExpect(jsonPath("$[0].description").value(expected.getDescription()))
-                .andExpect(jsonPath("$[0].created").value(expected.getCreated()));
+                .andExpect(jsonPath("$[0].created").value(expected.getCreated().format(formatter)));
     }
 
     @Test
     public void testGetRequestById() throws Exception {
-        ItemRequestDto expected = new ItemRequestDto(1L, "description", null, List.of());
         Mockito.when(requestService.getRequestById(eq(1L))).thenReturn(expected);
 
         mvc.perform(get("/requests/{requestId}", 1L)
                         .header("X-Sharer-User-Id", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(JsonUtil.toJson(new ItemRequestDto(1L, "description", null, List.of()))))
+                        .content(JsonUtil.toJson(expected)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(expected.getId()))
                 .andExpect(jsonPath("$.description").value(expected.getDescription()))
-                .andExpect(jsonPath("$.created").value(expected.getCreated()));
+                .andExpect(jsonPath("$.created").value(expected.getCreated().format(formatter)));
     }
 }

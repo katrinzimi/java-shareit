@@ -1,5 +1,6 @@
 package ru.practicum.shareit.rest;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,9 @@ import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -30,87 +33,82 @@ public class ItemRestTests {
 
     @MockBean
     private ItemService itemService;
+    private ItemDto expected;
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS");
+
+    @BeforeEach
+    void setup() {
+        expected = new ItemDto(1L, "item", "description", true,
+                LocalDateTime.now(Clock.systemDefaultZone()).minusDays(2),
+                LocalDateTime.now(Clock.systemDefaultZone()).plusDays(1), List.of());
+    }
 
     @Test
     public void testItemCreate() throws Exception {
-        ItemDto expected = new ItemDto(1L, "item", "description", true,
-                null, null, List.of());
         Mockito.when(itemService.create(eq(1L), any())).thenReturn(expected);
 
         mvc.perform(post("/items")
                         .header("X-Sharer-User-Id", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(JsonUtil.toJson(new ItemDto(1L, "item", "description", true,
-                                LocalDateTime.now().minusDays(2), LocalDateTime.now().minusDays(1), List.of()))))
+                        .content(JsonUtil.toJson(expected)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value(expected.getName()))
                 .andExpect(jsonPath("$.description").value(expected.getDescription()))
                 .andExpect(jsonPath("$.available").value(expected.getAvailable()))
-                .andExpect(jsonPath("$.lastBooking").value(expected.getLastBooking()))
-                .andExpect(jsonPath("$.nextBooking").value(expected.getLastBooking()));
+                .andExpect(jsonPath("$.lastBooking").value(expected.getLastBooking().format(formatter)))
+                .andExpect(jsonPath("$.nextBooking").value(expected.getNextBooking().format(formatter)));
     }
 
     @Test
     public void testItemUpdate() throws Exception {
-        ItemDto expected = new ItemDto(1L, "itemUpdate", "descriptionUpdate", false,
-                null, null, List.of());
         Mockito.when(itemService.update(eq(1L), any())).thenReturn(expected);
 
         mvc.perform(patch("/items/{itemId}", 1L)
                         .header("X-Sharer-User-Id", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(JsonUtil.toJson(new ItemDto(1L, "itemUpdate", "descriptionUpdate", false,
-                                LocalDateTime.now().minusDays(2), LocalDateTime.now().minusDays(1), List.of()))))
+                        .content(JsonUtil.toJson(expected)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value(expected.getName()))
                 .andExpect(jsonPath("$.description").value(expected.getDescription()))
                 .andExpect(jsonPath("$.available").value(expected.getAvailable()))
-                .andExpect(jsonPath("$.lastBooking").value(expected.getLastBooking()))
-                .andExpect(jsonPath("$.nextBooking").value(expected.getLastBooking()));
+                .andExpect(jsonPath("$.lastBooking").value(expected.getLastBooking().format(formatter)))
+                .andExpect(jsonPath("$.nextBooking").value(expected.getNextBooking().format(formatter)));
     }
 
     @Test
     public void testItemFindById() throws Exception {
-        ItemDto expected = new ItemDto(1L, "item", "description", true,
-                null, null, List.of());
         Mockito.when(itemService.findById(eq(1L))).thenReturn(expected);
 
         mvc.perform(get("/items/{itemId}", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(JsonUtil.toJson(new ItemDto(1L, "item", "description", true,
-                                LocalDateTime.now().minusDays(2), LocalDateTime.now().minusDays(1), List.of()))))
+                        .content(JsonUtil.toJson(expected)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value(expected.getName()))
                 .andExpect(jsonPath("$.description").value(expected.getDescription()))
                 .andExpect(jsonPath("$.available").value(expected.getAvailable()))
-                .andExpect(jsonPath("$.lastBooking").value(expected.getLastBooking()))
-                .andExpect(jsonPath("$.nextBooking").value(expected.getLastBooking()));
+                .andExpect(jsonPath("$.lastBooking").value(expected.getLastBooking().format(formatter)))
+                .andExpect(jsonPath("$.nextBooking").value(expected.getNextBooking().format(formatter)));
     }
 
     @Test
     public void testItemFindAll() throws Exception {
-        ItemDto expected = new ItemDto(1L, "item", "description", true,
-                null, null, List.of());
         List<ItemDto> itemDtoList = List.of(expected);
         Mockito.when(itemService.findAll(eq(1L))).thenReturn(itemDtoList);
 
         mvc.perform(get("/items")
                         .header("X-Sharer-User-Id", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(JsonUtil.toJson(new ItemDto(1L, "item", "description", true,
-                                LocalDateTime.now().minusDays(2), LocalDateTime.now().minusDays(1), List.of()))))
+                        .content(JsonUtil.toJson(expected)))
                 .andExpect(jsonPath("$.length()").value(itemDtoList.size()))
                 .andExpect(jsonPath("$[0].id").value(expected.getId()))
                 .andExpect(jsonPath("$[0].name").value(expected.getName()))
                 .andExpect(jsonPath("$[0].available").value(expected.getAvailable()))
-                .andExpect(jsonPath("$[0].lastBooking").value(expected.getLastBooking()))
-                .andExpect(jsonPath("$[0].nextBooking").value(expected.getLastBooking()));
+                .andExpect(jsonPath("$[0].lastBooking").value(expected.getLastBooking().format(formatter)))
+                .andExpect(jsonPath("$[0].nextBooking").value(expected.getNextBooking().format(formatter)));
     }
 
     @Test
     public void testSearch() throws Exception {
-        ItemDto expected = new ItemDto(1L, "item", "description", true,
-                null, null, List.of());
         List<ItemDto> itemDtoList = List.of(expected);
         Mockito.when(itemService.search(eq("item"))).thenReturn(itemDtoList);
 
@@ -118,28 +116,27 @@ public class ItemRestTests {
                         .header("X-Sharer-User-Id", 1L)
                         .param("text", "item")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(JsonUtil.toJson(new ItemDto(1L, "item", "description", true,
-                                LocalDateTime.now().minusDays(2), LocalDateTime.now().minusDays(1), List.of()))))
+                        .content(JsonUtil.toJson(expected)))
                 .andExpect(jsonPath("$.length()").value(itemDtoList.size()))
                 .andExpect(jsonPath("$[0].id").value(expected.getId()))
                 .andExpect(jsonPath("$[0].name").value(expected.getName()))
                 .andExpect(jsonPath("$[0].available").value(expected.getAvailable()))
-                .andExpect(jsonPath("$[0].lastBooking").value(expected.getLastBooking()))
-                .andExpect(jsonPath("$[0].nextBooking").value(expected.getLastBooking()));
+                .andExpect(jsonPath("$[0].lastBooking").value(expected.getLastBooking().format(formatter)))
+                .andExpect(jsonPath("$[0].nextBooking").value(expected.getNextBooking().format(formatter)));
     }
 
     @Test
     public void testCommentCreate() throws Exception {
-        CommentDto expected = new CommentDto(1L, "comment", "Vanya", null);
-        Mockito.when(itemService.createComment(eq(1L), eq(1L), any())).thenReturn(expected);
+        CommentDto commentDto = new CommentDto(1L, "comment", "Vanya", LocalDateTime.now(Clock.systemDefaultZone()));
+        Mockito.when(itemService.createComment(eq(1L), eq(1L), any())).thenReturn(commentDto);
 
         mvc.perform(post("/items/{itemId}/comment", 1L)
                         .header("X-Sharer-User-Id", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(JsonUtil.toJson(new CommentDto(1L, "comment", "Vanya", null))))
+                        .content(JsonUtil.toJson(commentDto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.text").value(expected.getText()))
-                .andExpect(jsonPath("$.authorName").value(expected.getAuthorName()))
-                .andExpect(jsonPath("$.created").value(expected.getCreated()));
+                .andExpect(jsonPath("$.text").value(commentDto.getText()))
+                .andExpect(jsonPath("$.authorName").value(commentDto.getAuthorName()))
+                .andExpect(jsonPath("$.created").value(commentDto.getCreated().format(formatter)));
     }
 }

@@ -1,5 +1,6 @@
 package ru.practicum.shareit.rest;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,9 @@ import ru.practicum.shareit.booking.dto.BookingState;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.dto.UserDto;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -35,68 +39,63 @@ public class BookingRestTests {
     private UserDto owner;
     private UserDto booker;
     private ItemDto item;
+    private BookingDto expected;
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS");
 
-    @Test
-    public void testBookingCreate() throws Exception {
+    @BeforeEach
+    void setup() {
         owner = new UserDto(1L, "email@mail.ru", "Vanya");
         booker = new UserDto(2L, "email2@mail.ru", "Petya");
         item = new ItemDto(1L, "item", "description", true, null, null, List.of());
-        BookingDto expected = new BookingDto(1L, null, null, booker, item, Status.WAITING);
+        expected = new BookingDto(1L, LocalDateTime.now(Clock.systemDefaultZone()).minusDays(2),
+                LocalDateTime.now(Clock.systemDefaultZone()).minusDays(1), booker, item, Status.WAITING);
+    }
+
+    @Test
+    public void testBookingCreate() throws Exception {
         Mockito.when(bookingService.create(eq(1L), any())).thenReturn(expected);
 
         mvc.perform(post("/bookings")
                         .header("X-Sharer-User-Id", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(JsonUtil.toJson(new BookingDto(1L, null, null, booker, item, Status.WAITING))))
+                        .content(JsonUtil.toJson(expected)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.start").value(expected.getStart()))
-                .andExpect(jsonPath("$.end").value(expected.getEnd()))
-                .andExpect(jsonPath("$.status").value("WAITING"));
+                .andExpect(jsonPath("$.start").value(expected.getStart().format(formatter)))
+                .andExpect(jsonPath("$.end").value(expected.getEnd().format(formatter)))
+                .andExpect(jsonPath("$.status").value(String.valueOf(expected.getStatus())));
     }
 
     @Test
     public void testApproveBookingUpdate() throws Exception {
-        owner = new UserDto(1L, "email@mail.ru", "Vanya");
-        booker = new UserDto(2L, "email2@mail.ru", "Petya");
-        item = new ItemDto(1L, "item", "description", true, null, null, List.of());
-        BookingDto expected = new BookingDto(1L, null, null, booker, item, Status.APPROVED);
         Mockito.when(bookingService.approveBooking(eq(1L), eq(2L), any())).thenReturn(expected);
 
         mvc.perform(patch("/bookings/{bookingId}", 2L)
                         .header("X-Sharer-User-Id", 1L)
                         .param("approved", "true")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(JsonUtil.toJson(new BookingDto(1L, null, null, booker, item, Status.APPROVED))))
+                        .content(JsonUtil.toJson(expected)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.start").value(expected.getStart()))
-                .andExpect(jsonPath("$.end").value(expected.getEnd()))
-                .andExpect(jsonPath("$.status").value("APPROVED"));
+                .andExpect(jsonPath("$.start").value(expected.getStart().format(formatter)))
+                .andExpect(jsonPath("$.end").value(expected.getEnd().format(formatter)))
+                .andExpect(jsonPath("$.status").value(String.valueOf(expected.getStatus())));
     }
 
     @Test
     public void testItemFindById() throws Exception {
-        owner = new UserDto(1L, "email@mail.ru", "Vanya");
-        booker = new UserDto(2L, "email2@mail.ru", "Petya");
-        item = new ItemDto(1L, "item", "description", true, null, null, List.of());
-        BookingDto expected = new BookingDto(1L, null, null, booker, item, Status.APPROVED);
         Mockito.when(bookingService.findById(eq(1L), eq(1L))).thenReturn(expected);
 
         mvc.perform(get("/bookings/{bookingId}", 1L)
                         .header("X-Sharer-User-Id", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(JsonUtil.toJson(new BookingDto(1L, null, null, booker, item, Status.APPROVED))))
+                        .content(JsonUtil.toJson(expected)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.start").value(expected.getStart()))
-                .andExpect(jsonPath("$.end").value(expected.getEnd()))
-                .andExpect(jsonPath("$.status").value("APPROVED"));
+                .andExpect(jsonPath("$.start").value(expected.getStart().format(formatter)))
+                .andExpect(jsonPath("$.end").value(expected.getEnd().format(formatter)))
+                .andExpect(jsonPath("$.status").value(String.valueOf(expected.getStatus())));
     }
 
     @Test
     public void testFindByUserId() throws Exception {
-        owner = new UserDto(1L, "email@mail.ru", "Vanya");
-        booker = new UserDto(2L, "email2@mail.ru", "Petya");
-        item = new ItemDto(1L, "item", "description", true, null, null, List.of());
-        BookingDto expected = new BookingDto(1L, null, null, booker, item, Status.APPROVED);
         List<BookingDto> bookingDtoList = List.of(expected);
         Mockito.when(bookingService.findBookingsByUser(eq(2L), any())).thenReturn(bookingDtoList);
 
@@ -104,21 +103,17 @@ public class BookingRestTests {
                         .header("X-Sharer-User-Id", 2L)
                         .param("state", String.valueOf(BookingState.ALL))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(JsonUtil.toJson(new BookingDto(1L, null, null, booker, item, Status.APPROVED))))
+                        .content(JsonUtil.toJson(expected)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(bookingDtoList.size()))
                 .andExpect(jsonPath("$[0].id").value(expected.getId()))
-                .andExpect(jsonPath("$[0].start").value(expected.getStart()))
-                .andExpect(jsonPath("$[0].end").value(expected.getEnd()))
-                .andExpect(jsonPath("$[0].status").value("APPROVED"));
+                .andExpect(jsonPath("$[0].start").value(expected.getStart().format(formatter)))
+                .andExpect(jsonPath("$[0].end").value(expected.getEnd().format(formatter)))
+                .andExpect(jsonPath("$[0].status").value(String.valueOf(expected.getStatus())));
     }
 
     @Test
     public void testFindByOwnerId() throws Exception {
-        owner = new UserDto(1L, "email@mail.ru", "Vanya");
-        booker = new UserDto(2L, "email2@mail.ru", "Petya");
-        item = new ItemDto(1L, "item", "description", true, null, null, List.of());
-        BookingDto expected = new BookingDto(1L, null, null, booker, item, Status.APPROVED);
         List<BookingDto> bookingDtoList = List.of(expected);
         Mockito.when(bookingService.findBookingsByOwner(eq(1L), any())).thenReturn(bookingDtoList);
 
@@ -126,12 +121,12 @@ public class BookingRestTests {
                         .header("X-Sharer-User-Id", 1L)
                         .param("state", String.valueOf(BookingState.ALL))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(JsonUtil.toJson(new BookingDto(1L, null, null, booker, item, Status.APPROVED))))
+                        .content(JsonUtil.toJson(expected)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(bookingDtoList.size()))
                 .andExpect(jsonPath("$[0].id").value(expected.getId()))
-                .andExpect(jsonPath("$[0].start").value(expected.getStart()))
-                .andExpect(jsonPath("$[0].end").value(expected.getEnd()))
-                .andExpect(jsonPath("$[0].status").value("APPROVED"));
+                .andExpect(jsonPath("$[0].start").value(expected.getStart().format(formatter)))
+                .andExpect(jsonPath("$[0].end").value(expected.getEnd().format(formatter)))
+                .andExpect(jsonPath("$[0].status").value(String.valueOf(expected.getStatus())));
     }
 }

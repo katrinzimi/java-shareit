@@ -13,7 +13,6 @@ import ru.practicum.shareit.request.ItemRequestController;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.service.ItemRequestService;
 
-import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -34,11 +33,11 @@ public class ItemrequestRestTests {
     @MockBean
     private ItemRequestService requestService;
     private ItemRequestDto expected;
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS");
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
     @BeforeEach
     void setup() {
-        expected = new ItemRequestDto(1L, "description", LocalDateTime.now(Clock.systemDefaultZone()), List.of());
+        expected = new ItemRequestDto(1L, "description", LocalDateTime.parse("2024-08-29T00:00:00"), List.of());
     }
 
     @Test

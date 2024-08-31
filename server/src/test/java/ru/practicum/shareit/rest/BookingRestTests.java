@@ -17,7 +17,6 @@ import ru.practicum.shareit.booking.dto.BookingState;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.dto.UserDto;
 
-import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -40,15 +39,15 @@ public class BookingRestTests {
     private UserDto booker;
     private ItemDto item;
     private BookingDto expected;
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS");
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
     @BeforeEach
     void setup() {
         owner = new UserDto(1L, "email@mail.ru", "Vanya");
         booker = new UserDto(2L, "email2@mail.ru", "Petya");
         item = new ItemDto(1L, "item", "description", true, null, null, List.of());
-        expected = new BookingDto(1L, LocalDateTime.now(Clock.systemDefaultZone()).minusDays(2),
-                LocalDateTime.now(Clock.systemDefaultZone()).minusDays(1), booker, item, Status.WAITING);
+        expected = new BookingDto(1L, LocalDateTime.parse("2024-08-29T00:00:00").minusDays(2),
+                LocalDateTime.parse("2024-08-29T00:00:00").minusDays(1), booker, item, Status.WAITING);
     }
 
     @Test

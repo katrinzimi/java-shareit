@@ -34,13 +34,13 @@ public class ItemRestTests {
     @MockBean
     private ItemService itemService;
     private ItemDto expected;
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS");
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
     @BeforeEach
     void setup() {
         expected = new ItemDto(1L, "item", "description", true,
-                LocalDateTime.now(Clock.systemDefaultZone()).minusDays(2),
-                LocalDateTime.now(Clock.systemDefaultZone()).plusDays(1), List.of());
+                LocalDateTime.parse("2024-08-29T00:00:00").minusDays(2),
+                LocalDateTime.parse("2024-08-29T00:00:00").plusDays(1), List.of());
     }
 
     @Test

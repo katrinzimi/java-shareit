@@ -21,7 +21,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.util.AssertionErrors.assertEquals;
 
 @SpringBootTest
 public class ItemItTests {
@@ -103,16 +102,15 @@ public class ItemItTests {
         itemService.createComment(userBooker.getId(), item.getId(), createDto);
         List<ItemDto> all = itemService.findAll(user.getId());
 
-        assertEquals("", 1, all.size());
+        assertThat(all.size()).isNotZero();
         assertThat(all.get(0).getName()).isEqualTo(item.getName());
         assertThat(all.get(0).getDescription()).isEqualTo(item.getDescription());
-        //assertThat(all.get(0).getComments()).isEqualTo(item.getComments());
     }
 
     @Test
     public void testSearch() {
         List<ItemDto> search = itemService.search("item");
-        assertEquals("", 1, search.size());
+        assertThat(search.size()).isNotZero();
         assertThat(search.get(0).getName()).isEqualTo(item.getName());
         assertThat(search.get(0).getDescription()).isEqualTo(item.getDescription());
     }

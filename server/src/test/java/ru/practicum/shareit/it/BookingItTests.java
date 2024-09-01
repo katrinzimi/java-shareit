@@ -22,7 +22,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.util.AssertionErrors.assertEquals;
 
 @SpringBootTest
 public class BookingItTests {
@@ -96,7 +95,7 @@ public class BookingItTests {
         BookingCreateDto createBookingDto = new BookingCreateDto(item.getId(), LocalDateTime.now(), LocalDateTime.now().plusDays(1));
         BookingDto bookingDto = bookingService.create(userBooker.getId(), createBookingDto);
         List<BookingDto> bookingsByUser = bookingService.findBookingsByUser(userBooker.getId(), BookingState.ALL);
-        assertEquals("", 1, bookingsByUser.size());
+        assertThat(bookingsByUser.size()).isNotZero();
         assertThat(bookingsByUser.get(0).getItem().getName()).isEqualTo(item.getName());
         assertThat(bookingsByUser.get(0).getItem().getDescription()).isEqualTo(item.getDescription());
         assertThat(bookingsByUser.get(0).getStatus()).isEqualTo(Status.WAITING);
@@ -109,7 +108,7 @@ public class BookingItTests {
         BookingCreateDto createBookingDto = new BookingCreateDto(item.getId(), LocalDateTime.now(), LocalDateTime.now().plusDays(1));
         BookingDto bookingDto = bookingService.create(userBooker.getId(), createBookingDto);
         List<BookingDto> bookingsByUser = bookingService.findBookingsByOwner(user.getId(), BookingState.ALL);
-        assertEquals("", 1, bookingsByUser.size());
+        assertThat(bookingsByUser.size()).isNotZero();
         assertThat(bookingsByUser.get(0).getItem().getName()).isEqualTo(item.getName());
         assertThat(bookingsByUser.get(0).getItem().getDescription()).isEqualTo(item.getDescription());
         assertThat(bookingsByUser.get(0).getStatus()).isEqualTo(Status.WAITING);

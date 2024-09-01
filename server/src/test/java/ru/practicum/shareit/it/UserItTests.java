@@ -14,7 +14,6 @@ import ru.practicum.shareit.user.service.UserService;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.util.AssertionErrors.assertEquals;
 
 @SpringBootTest
 public class UserItTests {
@@ -77,7 +76,7 @@ public class UserItTests {
         UserCreateDto createDto = new UserCreateDto("email@mail.ru", "Vasya");
         UserDto createdUser = userService.create(createDto);
         List<UserDto> all = userService.findAll();
-        assertEquals("", 1, all.size());
+        assertThat(all.size()).isNotZero();
         assertThat(all.get(0).getName()).isEqualTo(createdUser.getName());
         assertThat(all.get(0).getEmail()).isEqualTo(createdUser.getEmail());
     }

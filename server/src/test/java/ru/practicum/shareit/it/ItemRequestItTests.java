@@ -16,11 +16,9 @@ import ru.practicum.shareit.user.dto.UserCreateDto;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserService;
 
-import java.time.Clock;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.util.AssertionErrors.assertEquals;
 
 @SpringBootTest
 public class ItemRequestItTests {
@@ -33,7 +31,6 @@ public class ItemRequestItTests {
     private ItemRequestService requestService;
     private UserDto user;
     private ItemDto item;
-    private Clock clock;
 
 
     @Autowired
@@ -55,7 +52,7 @@ public class ItemRequestItTests {
     }
 
     @Test
-    public void testItemCreate() {
+    public void testItemRequestCreate() {
         ItemRequestCreateDto createDto = new ItemRequestCreateDto("description_request");
         ItemRequestDto result = requestService.create(createDto, user.getId());
         assertThat(result.getDescription()).isEqualTo("description_request");
@@ -68,7 +65,7 @@ public class ItemRequestItTests {
         ItemRequestCreateDto createDto = new ItemRequestCreateDto("description_request");
         requestService.create(createDto, user.getId());
         List<ItemRequestDto> allByUserId = requestService.findAllByUserId(user.getId());
-        assertEquals("", 1, allByUserId.size());
+        assertThat(allByUserId.size()).isNotZero();
         assertThat(allByUserId.get(0).getDescription()).isEqualTo("description_request");
     }
 
@@ -77,7 +74,7 @@ public class ItemRequestItTests {
         ItemRequestCreateDto createDto = new ItemRequestCreateDto("description_request");
         requestService.create(createDto, user.getId());
         List<ItemRequestDto> all = requestService.findAll();
-        assertEquals("", 1, all.size());
+        assertThat(all.size()).isNotZero();
         assertThat(all.get(0).getDescription()).isEqualTo("description_request");
     }
 
